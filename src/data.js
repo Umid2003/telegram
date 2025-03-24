@@ -9,7 +9,7 @@ import { FaPython } from "react-icons/fa";
 import { SiTypescript } from "react-icons/si";
 
 export const onlineCourses=[
-    { title: 'JS', length: '3 months', level: 'Intermediate', price: 20, img: FaJs  },
+    { title: 'JavaScript', length: '3 months', level: 'Intermediate', price: 20, img: FaJs  },
     { title: 'React JS', length: '4 months', level: 'Intermediate', price: 35, img: FaReact  },
     { title: 'Vue JS', length: '4 months', level: 'Beginner', price: 30, img: FaVuejs  },
     { title: 'Angular', length: '3 months', level: 'Advanced', price: 33, img: FaAngular  },
