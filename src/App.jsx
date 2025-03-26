@@ -5,15 +5,19 @@ import { onlineCourses } from "./data";
 const App = () => {
   const [courses, setCourses] = useState();
   const [selectedCourse, setSelectedCourse] = useState([]);
-
+  const [boughtItem, setBoughtItem] = useState(false);
   useEffect(() => {
     setCourses(onlineCourses);
   }, [selectedCourse]);
+
   const selectCourse = (num) => {
     let newArr = [...selectedCourse];
     let newCourse = courses.find((item, index) => index === num);
-    newArr.push(newCourse);
-    setSelectedCourse(newArr);
+    let buyItem = selectedCourse.some((item) => item.title === newCourse.title);
+    if (!buyItem) {
+      newArr.push(newCourse);
+      setSelectedCourse(newArr);
+    }
   };
   const sumPriceAll = () => {
     let sum = 0;
@@ -22,11 +26,12 @@ const App = () => {
     });
     return sum;
   };
-  const delItem=(num)=>{
-    let newSelectedCourse=[...selectedCourse]
-  newSelectedCourse.splice(num,1)
-  setSelectedCourse(newSelectedCourse)    
-  }
+  const delItem = (num) => {
+    let newSelectedCourse = [...selectedCourse];
+    newSelectedCourse.splice(num, 1);
+    setSelectedCourse(newSelectedCourse);
+  };
+
   return (
     <>
       <div className="p-2 flex gap-10 flex-col">
@@ -43,7 +48,10 @@ const App = () => {
                       {index + 1}. {item.title}
                     </h4>
                     <p>${item.price}</p>
-                    <button onClick={()=>delItem(index)} className="bg-red-500 text-white p-2 rounded-md cursor-pointer">
+                    <button
+                      onClick={() => delItem(index)}
+                      className="bg-red-500 text-white p-2 rounded-md cursor-pointer"
+                    >
                       Delete
                     </button>
                   </div>
@@ -52,7 +60,8 @@ const App = () => {
             <div>
               {sumPriceAll() > 0 ? (
                 <h2 className="mt-2 flex items-center gap-2 justify-end">
-                  Total price: <span className="text-3xl">${sumPriceAll()}</span>
+                  Total price:{" "}
+                  <span className="text-3xl">${sumPriceAll()}</span>
                 </h2>
               ) : (
                 ""
@@ -81,7 +90,11 @@ const App = () => {
                     </p>
                     <button
                       onClick={() => selectCourse(index)}
-                      className="p-2 rounded-md bg-green-700 text-white cursor-pointer w-full"
+                      style={{
+                        backgroundColor:selectedCourse.some(course=>course.title===item.title)?'red':'green'
+                      }}
+                      className="p-2 rounded-md text-white cursor-pointer w-full"
+                          
                     >
                       Buy
                     </button>
