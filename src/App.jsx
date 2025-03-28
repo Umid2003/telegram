@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useState } from "react";
 import { onlineCourses } from "./data";
 
@@ -6,13 +6,23 @@ const App = () => {
   const [courses, setCourses] = useState();
   const [selectedCourse, setSelectedCourse] = useState([]);
 
-  
   const telegram = window.Telegram.WebApp;
+  const buyItem = () => {
+    telegram.MainButton.text = "Buy Courses";
+    telegram.MainButton.show();
+  };
+  const sendItems = useCallback(() => {
+    telegram.sendData(JSON.stringify(selectedCourse));
+  }, [selectedCourse]);
+
   useEffect(() => {
     setCourses(onlineCourses);
-    telegram.ready()
-  }, [selectedCourse]);
-  
+    telegram.ready();
+    telegram.onEvent("mainButtonClicked", sendItems);
+
+    return () => telegram.offEvent("mainButtonClicked", sendItems);
+  }, [selectedCourse, sendItems]);
+
   const selectCourse = (num) => {
     let newArr = [...selectedCourse];
     let newCourse = courses.find((item, index) => index === num);
@@ -34,10 +44,7 @@ const App = () => {
     newSelectedCourse.splice(num, 1);
     setSelectedCourse(newSelectedCourse);
   };
-const buyItem=()=>{
-  telegram.MainButton.text="Buy Courses"
-  telegram.MainButton.show()
-}
+
   return (
     <>
       <div className="p-2 flex gap-10 flex-col">
@@ -65,14 +72,18 @@ const buyItem=()=>{
               : ""}
             <div>
               {sumPriceAll() > 0 ? (
-            <div>
-            <h2 className="mt-2 flex items-center gap-2 justify-end">
-                  Total price:{" "}
-                  <span className="text-3xl">${sumPriceAll()}</span>
-                </h2>
-                <button onClick={buyItem} className="bg-green-600 text-white p-2 cursor-pointer rounded-md w-full mt-4">BUY</button>
-            </div>
-            
+                <div>
+                  <h2 className="mt-2 flex items-center gap-2 justify-end">
+                    Total price:{" "}
+                    <span className="text-3xl">${sumPriceAll()}</span>
+                  </h2>
+                  <button
+                    onClick={buyItem}
+                    className="bg-green-600 text-white p-2 cursor-pointer rounded-md w-full mt-4"
+                  >
+                    BUY
+                  </button>
+                </div>
               ) : (
                 ""
               )}
@@ -101,10 +112,13 @@ const buyItem=()=>{
                     <button
                       onClick={() => selectCourse(index)}
                       style={{
-                        backgroundColor:selectedCourse.some(course=>course.title===item.title)?'red':'green'
+                        backgroundColor: selectedCourse.some(
+                          (course) => course.title === item.title
+                        )
+                          ? "red"
+                          : "green",
                       }}
                       className="p-2 rounded-md text-white cursor-pointer w-full"
-                          
                     >
                       Buy
                     </button>
